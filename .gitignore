@@ -1,0 +1,19 @@
+# Operating system files
+.DS_Store
+.AppleDouble
+._*
+Thumbs.db
+desktop.ini
+
+# Build output from the Arduino IDE and arduino-cli
+build/
+*.hex
+*.bin
+*.elf
+*.map
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*~
