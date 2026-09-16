@@ -1,3 +1,5 @@
+<img src="assets/kit-contents.webp" alt="Soldered Inventor Kit" width="100%">
+
 # Inventor kit: MicroPython examples
 
 MicroPython example scripts for the Soldered Inventor kit, built around the
