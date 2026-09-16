@@ -78,61 +78,61 @@ in between, so work through them in order instead of running once.
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [0.1 First blink](0_Getting_Started/0.1_First_Blink) | That the board, the driver and MicroPython all work, before anything harder | LED, 330 Ω |
+| [0.1 First blink](0_Getting_Started/0.1_First_Blink) | That the board, the driver and MicroPython all work, before anything harder | LED, 330 Ω resistor |
 | [0.2 Reading a potentiometer](0_Getting_Started/0.2_Reading_A_Potentiometer) | Analog reads in counts and in millivolts, and two traces at once on the plotter | Potentiometer |
 
 ### 1. LEDs and PWM
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [1.1 LED current and resistor sizing](1_LEDs_And_PWM/1.1_LED_Current_And_Resistor_Sizing) | Forward voltage and current measured from your own LED, and where the number 330 comes from | LED, 330 Ω, 10 kΩ |
-| [1.2 Gamma fading and RGB colour mixing](1_LEDs_And_PWM/1.2_Gamma_Fading_And_RGB_Colour_Mixing) | Hardware PWM, why duty cycle is not brightness, and the difference between driving an LED and messaging one | LED, 330 Ω, potentiometer, onboard WS2812B |
+| [1.1 LED current and resistor sizing](1_LEDs_And_PWM/1.1_LED_Current_And_Resistor_Sizing) | Forward voltage and current measured from your own LED, and where the number 330 comes from | LED, 330 Ω resistor, 10 kΩ resistor |
+| [1.2 Gamma fading and RGB colour mixing](1_LEDs_And_PWM/1.2_Gamma_Fading_And_RGB_Colour_Mixing) | Hardware PWM, why duty cycle is not brightness, and the difference between driving an LED and messaging one | LED, 330 Ω resistor, potentiometer, onboard WS2812B |
 
 ### 2. Buttons and analog inputs
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [2.1 Pull-up resistors and button debouncing](2_Buttons_And_Analog_Inputs/2.1_Pull_Up_Resistors_And_Button_Debouncing) | Floating pins, pull-up against pull-down, the internal pull-up, and your button's real bounce duration | 2× pushbutton, 3× 10 kΩ, 100 nF, LED, 330 Ω |
+| [2.1 Pull-up resistors and button debouncing](2_Buttons_And_Analog_Inputs/2.1_Pull_Up_Resistors_And_Button_Debouncing) | Floating pins, pull-up against pull-down, the internal pull-up, and your button's real bounce duration | 2× pushbuttons, 3× 10 kΩ resistors, 100 nF capacitor, LED, 330 Ω resistor |
 | [2.2 ADC noise, averaging and calibration](2_Buttons_And_Analog_Inputs/2.2_ADC_Noise_Averaging_And_Calibration) | That a reading is an estimate with a spread, what averaging costs, and the limit averaging cannot pass | Potentiometer |
-| [2.3 Photoresistor divider with hysteresis](2_Buttons_And_Analog_Inputs/2.3_Photoresistor_Divider_With_Hysteresis) | Picking a component value from a measurement, and why one threshold is unstable | Photoresistor, 3× 10 kΩ, LED, 330 Ω |
+| [2.3 Photoresistor divider with hysteresis](2_Buttons_And_Analog_Inputs/2.3_Photoresistor_Divider_With_Hysteresis) | Picking a component value from a measurement, and why one threshold is unstable | Photoresistor, 3× 10 kΩ resistors, LED, 330 Ω resistor |
 
 ### 3. Capacitors, diodes and transistors
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [3.1 Measuring an RC time constant](3_Capacitors_Diodes_And_Transistors/3.1_Measuring_An_RC_Time_Constant) | That the formula is arithmetic you can verify, and how to tell an untrustworthy measurement from a disappointing one | 2× 10 kΩ, 100 nF, 10 µF, pushbutton |
-| [3.2 Diode forward voltage](3_Capacitors_Diodes_And_Transistors/3.2_Diode_Forward_Voltage) | That 0.7 V is the middle of a range, and how to spot a reading the ADC has clipped | 1N4148, 330 Ω, potentiometer |
-| [3.3 Transistor base resistor and saturation](3_Capacitors_Diodes_And_Transistors/3.3_Transistor_Base_Resistor_And_Saturation) | That a transistor is a current amplifier, what saturation is, and how to size a base resistor | NPN, 10 kΩ, LED, 330 Ω, potentiometer |
+| [3.1 Measuring an RC time constant](3_Capacitors_Diodes_And_Transistors/3.1_Measuring_An_RC_Time_Constant) | That the formula is arithmetic you can verify, and how to tell an untrustworthy measurement from a disappointing one | 2× 10 kΩ resistors, 100 nF capacitor, 10 µF capacitor, pushbutton |
+| [3.2 Diode forward voltage](3_Capacitors_Diodes_And_Transistors/3.2_Diode_Forward_Voltage) | That 0.7 V is the middle of a range, and how to spot a reading the ADC has clipped | 1N4148 diode, 330 Ω resistor, potentiometer |
+| [3.3 Transistor base resistor and saturation](3_Capacitors_Diodes_And_Transistors/3.3_Transistor_Base_Resistor_And_Saturation) | That a transistor is a current amplifier, what saturation is, and how to size a base resistor | NPN transistor, 10 kΩ resistor, LED, 330 Ω resistor, potentiometer |
 
 ### 4. Shift register and actuators
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [4.1 Eight LEDs from three pins](4_Shift_Register_And_Actuators/4.1_Eight_LEDs_From_Three_Pins) | How a shift register moves data, what hardware SPI buys you over pin writes, and what a latch is for | SN74HC595N, 8× LED, 8× 330 Ω, 100 nF, potentiometer |
-| [4.2 Servo pulses without a library](4_Shift_Register_And_Actuators/4.2_Servo_Pulses_Without_A_Library) | What a servo signal actually is, that parts are not identical, rate limiting, and why a motor gets its own capacitors | SG90 servo, potentiometer, 10 µF, 100 nF |
-| [4.3 Driving a buzzer through a transistor](4_Shift_Register_And_Actuators/4.3_Driving_A_Buzzer_Through_A_Transistor) | Why a passive buzzer needs an alternating signal, mechanical resonance, and what a flyback diode is for | Buzzer, NPN, 10 kΩ, 1N4148, potentiometer |
+| [4.1 Eight LEDs from three pins](4_Shift_Register_And_Actuators/4.1_Eight_LEDs_From_Three_Pins) | How a shift register moves data, what hardware SPI buys you over pin writes, and what a latch is for | SN74HC595N shift register, 8× LEDs, 8× 330 Ω resistors, 100 nF capacitor, potentiometer |
+| [4.2 Servo pulses without a library](4_Shift_Register_And_Actuators/4.2_Servo_Pulses_Without_A_Library) | What a servo signal actually is, that parts are not identical, rate limiting, and why a motor gets its own capacitors | SG90 servo, potentiometer, 10 µF capacitor, 100 nF capacitor |
+| [4.3 Driving a buzzer through a transistor](4_Shift_Register_And_Actuators/4.3_Driving_A_Buzzer_Through_A_Transistor) | Why a passive buzzer needs an alternating signal, mechanical resonance, and what a flyback diode is for | Buzzer, NPN transistor, 10 kΩ resistor, 1N4148 diode, potentiometer |
 
 ### 5. Qwiic modules
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [5.1 Scanning the bus and reading temperature](5_Qwiic_Modules/5.1_Scanning_The_Bus_And_Reading_Temperature) | What is really on the I2C bus, and how to tell a reading from a number a missing sensor handed back | TMP117, Qwiic cable |
-| [5.2 Relay switching with hysteresis and lockout](5_Qwiic_Modules/5.2_Relay_Switching_With_Hysteresis_And_Lockout) | That a mechanical output needs rules a logic output does not, and separating what you want from what you may do | Qwiic relay, Qwiic cable, potentiometer, LED, 330 Ω |
+| [5.1 Scanning the bus and reading temperature](5_Qwiic_Modules/5.1_Scanning_The_Bus_And_Reading_Temperature) | What is really on the I2C bus, and how to tell a reading from a number a missing sensor handed back | TMP117 temperature sensor, Qwiic cable |
+| [5.2 Relay switching with hysteresis and lockout](5_Qwiic_Modules/5.2_Relay_Switching_With_Hysteresis_And_Lockout) | That a mechanical output needs rules a logic output does not, and separating what you want from what you may do | Qwiic relay, Qwiic cable, potentiometer, LED, 330 Ω resistor |
 
 ### 6. Low power
 
 | Example | What you learn | Hardware |
 | --- | --- | --- |
-| [6.1 Deep sleep, wake sources and RTC memory](6_Low_Power/6.1_Deep_Sleep_Wake_Sources_And_RTC_Memory) | That deep sleep is stopping and starting, not pausing, and that an interval and a schedule are different things | Pushbutton, 10 kΩ, LED, 330 Ω |
-| [6.2 Checking a sensor alert flag](6_Low_Power/6.2_Checking_A_Sensor_Alert_Flag) | That the sensor can hold the threshold and decide when the processor is needed, and what a wake costs when it finds nothing | TMP117, Qwiic cable, LED, 330 Ω |
+| [6.1 Deep sleep, wake sources and RTC memory](6_Low_Power/6.1_Deep_Sleep_Wake_Sources_And_RTC_Memory) | That deep sleep is stopping and starting, not pausing, and that an interval and a schedule are different things | Pushbutton, 10 kΩ resistor, LED, 330 Ω resistor |
+| [6.2 Checking a sensor alert flag](6_Low_Power/6.2_Checking_A_Sensor_Alert_Flag) | That the sensor can hold the threshold and decide when the processor is needed, and what a wake costs when it finds nothing | TMP117 temperature sensor, Qwiic cable, LED, 330 Ω resistor |
 
 ### 7. Projects
 
 | Project | What it combines | Hardware |
 | --- | --- | --- |
-| [7.1 Thermostat with relay and alarm](7_Projects/7.1_Thermostat_With_Relay_And_Alarm) | Sensor, relay, pot, LED and buzzer in one non-blocking loop with a run-on timer | TMP117, Qwiic relay, potentiometer, buzzer, NPN, LED |
-| [7.2 Wi-Fi temperature logger](7_Projects/7.2_WiFi_Temperature_Logger) | Deep sleep, RTC alarms, a buffer that survives sleep, and where the energy in a connected device goes | TMP117, pushbutton, 10 kΩ |
-| [7.3 Two-sensor sun tracker](7_Projects/7.3_Two_Sensor_Sun_Tracker) | Closed-loop control taught through its failure: dead band, rate limit and per-sensor calibration | 2× photoresistor, servo, SN74HC595N, 8× LED |
+| [7.1 Thermostat with relay and alarm](7_Projects/7.1_Thermostat_With_Relay_And_Alarm) | Sensor, relay, pot, LED and buzzer in one non-blocking loop with a run-on timer | TMP117 temperature sensor, Qwiic relay, potentiometer, buzzer, NPN transistor, LED |
+| [7.2 Wi-Fi temperature logger](7_Projects/7.2_WiFi_Temperature_Logger) | Deep sleep, RTC alarms, a buffer that survives sleep, and where the energy in a connected device goes | TMP117 temperature sensor, pushbutton, 10 kΩ resistor |
+| [7.3 Two-sensor sun tracker](7_Projects/7.3_Two_Sensor_Sun_Tracker) | Closed-loop control taught through its failure: dead band, rate limit and per-sensor calibration | 2× photoresistors, servo, SN74HC595N shift register, 8× LEDs |
 | [7.4 Bench controller](7_Projects/7.4_Bench_Controller) | Architecture. Five jobs at three different rates, none of which blocks | Most of the kit |
 
 ## Pins
@@ -156,10 +156,12 @@ brought out to a header.
 
 | Pin | Why |
 | --- | --- |
-| IO19, IO20 | The ESP32-S3's native USB data lines |
 | IO43, IO44 | UART0, the serial console |
 | IO0 | Boot strap pin, and the onboard USER button |
 | IO2 | The onboard WS2812B RGB LED, not brought out to a header |
+
+IO19 and IO20 are the ESP32-S3's native USB lines, but this board talks to your computer through the CH340,
+so nothing uses them and they are free for your own circuits.
 
 ### Why every analog pin is IO4 to IO10
 
@@ -197,8 +199,12 @@ bus answered, not that the right device answered.
 `RESONANT_HZ` in 4.3 and the servo pulse limits in 4.2 are starting values, not answers. Measure your own on the
 pages that teach you how, then carry them into 7.1, 7.3 and 7.4.
 
-## Need help?
+### About Soldered
 
-- Board documentation: [docs.soldered.com/deepsleep-esp32-s3/overview](https://docs.soldered.com/deepsleep-esp32-s3/overview)
-- Contact Soldered: [soldered.com/contact](https://soldered.com/contact)
-- Found a mistake in an example? Open an issue or a pull request, both are welcome.
+![Soldered Logo](https://raw.githubusercontent.com/SolderedElectronics/Soldered-Generic-Arduino-Library/dev/extras/Soldered-logo-color.png)
+
+At Soldered, we design and manufacture a wide selection of electronic products to help you turn your ideas into acts and bring you one step closer to your final project. Our products are intented for makers and crafted in-house by our experienced team in Osijek, Croatia. We believe that sharing is a crucial element for improvement and innovation, and we work hard to stay connected with all our makers regardless of their skill or experience level. Therefore, all our products are open-source. Finally, we always have your back. If you face any problem concerning either your shopping experience or your electronics project, our team will help you deal with it, offering efficient customer service and cost-free technical support anytime. Some of those might be useful for you:
+
+- [Web Store](https://www.soldered.com/shop)
+- [Tutorials & Projects](https://soldered.com/learn)
+- [Documentation](https://docs.soldered.com)
