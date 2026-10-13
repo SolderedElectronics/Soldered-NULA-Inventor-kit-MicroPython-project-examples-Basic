@@ -14,7 +14,8 @@ import time
 """
 IO47 carries the servo's signal and IO4 reads the pot.
 
-The servo's power comes from VCC, the 5 V arriving over USB-C, and never from 3V3, which is a small regulator meant
+The servo's power comes from VCC, the board's input supply, and never from 3V3. VCC is the USB-C supply less the
+board's input diode, about 4.7 V, and it is what the 3.3 V regulator itself runs from. That regulator is meant
 to run the chip rather than start a motor. A 10 uF and a 100 nF go across the servo's own supply holes; the closing
 comment explains why.
 """
@@ -136,7 +137,7 @@ A motor starting is a sudden demand for current, and the voltage at the motor fa
 capacitor next to a hungry part is a local reservoir that covers the first gulp. Two values, because the 100 nF is
 fast and handles the sharp switching edges while the 10 uF holds the charge for the motor spinning up.
 
-They go across the servo's own supply holes, not down on the rails: the wire between a capacitor and the part it
+They go across the servo's own supply holes, not down on the power rows: the wire between a capacitor and the part it
 feeds has resistance, and a reservoir at the far end of the board arrives too late.
 
 If a supply sags far enough the chip resets itself deliberately, which is a brownout. One SG90 on this board does

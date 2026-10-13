@@ -1,6 +1,6 @@
 """
 @file       4.3_Driving_A_Buzzer_Through_A_Transistor.py
-@brief      Drives a passive buzzer through an NPN transistor from the 5 V rail, with a flyback diode.
+@brief      Drives a passive buzzer through an NPN transistor from the + row, with a flyback diode.
             Sweeps 500 Hz to 5 kHz to find its resonance, then steps the duty cycle at that frequency.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
@@ -14,8 +14,8 @@ import time
 IO48 drives the base of the transistor through a 10 kOhm resistor, and the transistor switches the buzzer against
 VCC. IO4 reads the pot, the volume knob in MODE_VOLUME.
 
-The transistor is here because the pin cannot do this job: it gives 3.3 V and a few tens of milliamps, while the
-coil is a low resistance that will take the whole 5 V rail and as much current as it can get.
+The transistor is here because the pin cannot do this job: it gives a few tens of milliamps, while the coil is a
+low resistance that will take as much current as it can get.
 
 The band on the 1N4148 marks the cathode and belongs on the positive side. Fitted the other way round it conducts
 all the time and shorts the buzzer out.

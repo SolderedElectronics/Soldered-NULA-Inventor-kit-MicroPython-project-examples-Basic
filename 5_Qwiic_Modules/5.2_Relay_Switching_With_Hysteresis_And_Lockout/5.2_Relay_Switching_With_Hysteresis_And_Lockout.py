@@ -15,7 +15,7 @@ import time
 from Relay import Relay, CHANNEL1
 
 """
-The relay is on the Qwiic bus, the pot is on IO4, and the LED on IO38 shows what the sketch wants the relay to do,
+The relay is on the Qwiic bus, the pot is on IO4, and the LED on IO38 shows what the script wants the relay to do,
 which is not always what the relay is allowed to do.
 
 The module's address is set by a switch on the module and can be anything from 0x30 to 0x37. Run the scanner from

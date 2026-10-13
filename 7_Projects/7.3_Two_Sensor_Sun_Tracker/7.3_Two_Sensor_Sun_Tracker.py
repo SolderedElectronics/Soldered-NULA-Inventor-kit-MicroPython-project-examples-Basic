@@ -1,6 +1,6 @@
 """
 @file       7.3_Two_Sensor_Sun_Tracker.py
-@brief      Two photoresistors either side of a divider turn a servo needle towards the brighter one, with a
+@brief      Two photoresistors either side of a paper strip turn a servo needle towards the brighter one, with a
             dead band and a rate limit to keep it from shuffling on its own noise.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
@@ -13,8 +13,8 @@ import time
 """
 The two photoresistors are on IO4 and IO5, the servo on IO47, and the 74HC595 LED bar on the four pins below.
 
-The sensors need a card standing upright between them, so light from one side falls on one and is shadowed from the
-other. Without it they read almost the same value and the script has nothing to steer by.
+The sensors need a strip of paper standing upright in the channel between them, so light from one side falls on one
+and is shadowed from the other. Without it they read almost the same value and the script has nothing to steer by.
 
 Nothing is mounted on the servo. It is a needle: the horn turns to face whichever side is brighter, and you move a
 light around the sensor head to lead it. A real tracker carries its sensors on the moving part, which needs a
