@@ -87,7 +87,7 @@ while True:
         gets the same steadiness from one.
 
         Then turn slowly up towards 3V3. All three traces hit 4095 and the jitter vanishes, which is not the filters
-        working. At 11 dB this ADC reaches full scale near 3140 mV and the pot goes on to the rail, so the top slice
+        working. At 11 dB this ADC reaches full scale near 3140 mV and the pot reaches 3.3 V itself, so the top slice
         of the travel is clipped and steady and wrong at once. Filters fix noise, not range.
         """
         raw = pot.read()
@@ -113,7 +113,7 @@ while True:
         apart near 2500 counts, close again near 3500, and the fit reads high from there. Two points pin down the
         ends and nothing else, which is why the factory calibration uses far more than two.
 
-        The 3300 below is a statement about the pot, not the ADC. The wiper really does reach the rail; the
+        The 3300 below is a statement about the pot, not the ADC. The wiper really does reach 3.3 V; the
         converter clips near 3140 mV and cannot see it.
         """
         raw = pot.read()

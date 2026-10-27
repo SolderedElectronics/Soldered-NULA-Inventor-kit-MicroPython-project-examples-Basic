@@ -17,7 +17,7 @@ SENSE_PIN = 4
 
 # The resistor you actually fitted, in ohms. Change this when you swap the resistor: every number below depends
 # on it being right.
-R_OHMS = 10000.0
+R_OHMS = 330.0
 
 VSUPPLY_MV = 3300.0
 
@@ -37,14 +37,17 @@ while True:
     total = 0
     for _ in range(64):
         total += sense.read_uv() // 1000
-    v_resistor_mv = total / 64.0
+
+    # The resistor sits between the pin and the junction, so the junction is the LED's anode and this
+    # reading is the forward voltage itself. Nothing here has to be worked out.
+    v_forward_mv = total / 64.0
+
+    # Whatever the supply gives that does not land across the LED lands across the resistor.
+    v_resistor_mv = VSUPPLY_MV - v_forward_mv
 
     # Ohm's law, and the LED is in series with the resistor so this is its current too.
     # Millivolts divided by ohms gives milliamps directly.
     current_ma = v_resistor_mv / R_OHMS
-
-    # Whatever the supply gives that does not land across the resistor lands across the LED.
-    v_forward_mv = VSUPPLY_MV - v_resistor_mv
 
     print()
     print("Resistor fitted:   {:.0f} ohm".format(R_OHMS))

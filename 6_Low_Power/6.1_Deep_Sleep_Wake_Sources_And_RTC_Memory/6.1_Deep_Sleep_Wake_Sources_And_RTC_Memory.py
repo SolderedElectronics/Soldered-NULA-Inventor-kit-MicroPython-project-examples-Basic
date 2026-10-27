@@ -31,7 +31,7 @@ SCL_PIN = 9
 """
   MODE_TIMER      sleep for a fixed number of seconds
   MODE_BUTTON     sleep until the button is pressed, with no timer at all
-  MODE_EITHER     both, and the sketch reports which one woke it
+  MODE_EITHER     both, and the script reports which one woke it
   MODE_RTC_ALARM  wake at the start of the next minute, from the RTC on the board
 """
 MODE_TIMER = 0

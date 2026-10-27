@@ -29,7 +29,7 @@ POT_PIN = 4
 """
   MODE_SPEED       times both ways of sending a byte, then walks a single bit across the LEDs
   MODE_BRIGHTNESS  a PWM signal on output-enable, with the pot setting the level
-  MODE_BARGRAPH    the pot fills the row of LEDs one at a time, like a volume meter
+  MODE_BARGRAPH    the pot fills the row of LEDs one at a time, as a bar graph
   MODE_BROKEN      latching while shifting, so you can see what the latch is for
 """
 MODE_SPEED = 0

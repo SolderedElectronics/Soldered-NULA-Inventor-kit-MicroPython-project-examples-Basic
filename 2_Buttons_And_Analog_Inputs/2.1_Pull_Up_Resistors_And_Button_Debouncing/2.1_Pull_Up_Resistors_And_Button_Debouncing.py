@@ -26,7 +26,7 @@ MODE_PULLDOWN_EXT = 2
 MODE_PULLUP_INT = 3
 MODE_BOUNCE = 4
 
-MODE = MODE_BOUNCE
+MODE = MODE_FLOATING
 
 BUTTON_PIN = 21
 LED_PIN = 38
@@ -80,9 +80,14 @@ def capture_bounce():
     while the spring settles. The pin reads every one of those as a separate press. This waits for the first edge
     and then samples flat out, so the trace is your button rather than somebody else's.
     """
-    # Wait for the line to go low, which is the moment the contacts first touch.
-    if button.value() != 0:
+    # Arm only while the line is at rest. Pressed already means we have missed the edge.
+    if button.value() == 0:
         return
+
+    # Spin until the contacts first touch. Nothing else may happen in here: the bounce is
+    # over in a millisecond or two, so sampling has to start at the edge, not after it.
+    while button.value():
+        pass
 
     trace = bytearray(BOUNCE_SAMPLES)
     next_us = time.ticks_us()

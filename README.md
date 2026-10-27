@@ -109,6 +109,7 @@ in between, so work through them in order instead of running once.
 | Example | What you learn | Hardware |
 | --- | --- | --- |
 | [4.1 Eight LEDs from three pins](4_Shift_Register_And_Actuators/4.1_Eight_LEDs_From_Three_Pins) | How a shift register moves data, what hardware SPI buys you over pin writes, and what a latch is for | SN74HC595N shift register, 8× LEDs, 8× 330 Ω resistors, 100 nF capacitor, potentiometer |
+| [4.1a Eight LEDs from three pins, no potentiometer](4_Shift_Register_And_Actuators/4.1a_Eight_LEDs_From_Three_Pins) | The same circuit as 4.1 without the knob: the update-rate timing and the broken latch | SN74HC595N shift register, 8× LEDs, 8× 330 Ω resistors, 100 nF capacitor |
 | [4.2 Servo pulses without a library](4_Shift_Register_And_Actuators/4.2_Servo_Pulses_Without_A_Library) | What a servo signal actually is, that parts are not identical, rate limiting, and why a motor gets its own capacitors | SG90 servo, potentiometer, 10 µF capacitor, 100 nF capacitor |
 | [4.3 Driving a buzzer through a transistor](4_Shift_Register_And_Actuators/4.3_Driving_A_Buzzer_Through_A_Transistor) | Why a passive buzzer needs an alternating signal, mechanical resonance, and what a flyback diode is for | Buzzer, NPN transistor, 10 kΩ resistor, 1N4148 diode, potentiometer |
 
@@ -142,7 +143,7 @@ in between, so work through them in order instead of running once.
 | Single LED | IO38 | Always through its own 330 Ω resistor |
 | Analog inputs | IO4, IO5, IO6, IO7 | Pots, photoresistors and circuit taps |
 | Wake-capable button | IO21 | The only button that can wake the board from deep sleep |
-| Other buttons | IO39, IO40, IO41, IO42 | |
+| Second button | IO39 | 7.4 is the only example with two buttons: IO21 and IO39 |
 | Shift register | IO11 data, IO12 clock, IO10 latch, IO13 output enable | IO11 and IO12 are also hardware SPI MOSI and SCK |
 | Servo signal | IO47 | Power from VCC, never 3V3 |
 | Buzzer, through the transistor | IO48 | |

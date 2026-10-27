@@ -61,7 +61,7 @@ pot = ADC(Pin(POT_PIN), atten=ADC.ATTN_11DB)
 """
 duty_ns() sets the high time of each pulse directly in nanoseconds, which is exactly what a servo reads. The
 Arduino version had to convert a pulse width into a duty number and work around a 14-bit resolution cap; here the
-pulse width is the argument, so a microsecond is simply multiplied by 1000.
+pulse width is the argument, so a microsecond is multiplied by 1000.
 """
 servo = PWM(Pin(SERVO_PIN), freq=SERVO_FREQ)
 

@@ -47,8 +47,8 @@ print("Lines starting with # are readings the ADC could not take, not data.")
 print("mA,Vf_mV")
 
 """
-Turn the pot from one end to the other over about twenty seconds. Measured on a 1N4148 the sweep runs from 0.156 mA
-at 534 mV to 6.579 mA at 705 mV, about 105 mV per decade of current, so the 0.7 V everybody quotes is one point on
+Turn the pot from one end to the other over about twenty seconds. Measured on a 1N4148 the sweep runs from 0.154 mA
+at 535 mV to 6.281 mA at 715 mV, about 100 mV per decade of current, so the 0.7 V everybody quotes is one point on
 a slope at a current somebody else picked. Both ends of the sweep are limited by the ADC rather than the diode,
 which is why readings are thrown away there instead of printed.
 """

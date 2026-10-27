@@ -22,9 +22,10 @@ The 10 kOhm is not optional. The base-emitter junction is a diode, so a wiper ne
 would put the whole supply across it and destroy the transistor.
 
 Turn the pot slowly up from the ground end and watch the collector. The transistor is off for the first part of the
-travel, passes through its linear region in a narrow band around a wiper voltage of 0.66 V, and is saturated for
-the rest. The edge of saturation needs only about 5 uA of base current, which no combination of the kit's 10 kOhm
-resistors gets near, which is why the base is swept with the pot.
+travel, passes through its linear region in a narrow band of wiper voltage between 0.86 V and 0.96 V, and is
+saturated for the rest. The base itself barely moves across all of that, sitting near 0.66 V the whole way. The
+edge of saturation needs about 30 uA of base current, which no combination of the kit's 10 kOhm resistors gets
+near, which is why the base is swept with the pot.
 """
 DRIVE_PIN = 48
 
@@ -102,9 +103,9 @@ while True:
     nothing and the ratio just falls as you turn the pot up.
 
     The real gain shows only at the edge. Turn slowly until the collector starts to climb: the ratio printed just
-    before it does is the closest this circuit gets to the datasheet figure. On the bench that is 11 to 15 saturated
-    against 250 at the edge, same transistor, same wiring. Take the edge figure as give or take a fifth, since it
-    comes from a 53 mV difference between two ADC pins.
+    before it does is the closest this circuit gets to the datasheet figure. On the bench a 2N2222A read 17 fully
+    saturated against about 119 at the edge, same transistor, same wiring. Take the edge figure as give or take a
+    fifth: it comes out of a 295 mV difference between two ADC pins divided by a 10 kOhm resistor.
     """
     ratio = (load_ma / base_ma) if base_ma > 0.0001 else 0
 
