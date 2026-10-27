@@ -4,7 +4,7 @@
             button, on either, and finally on the onboard RTC's alarm at the start of the next minute.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, I2C, RTC, deepsleep, wake_reason

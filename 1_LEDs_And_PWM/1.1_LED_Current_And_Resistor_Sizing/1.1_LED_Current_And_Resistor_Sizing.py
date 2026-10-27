@@ -4,7 +4,7 @@
             need for 5, 10 and 20 mA. Swap the 330 Ohm for the 10 kOhm and run it again.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, ADC

@@ -4,7 +4,7 @@
             the light range, then switch an LED on one threshold and on two.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, ADC

@@ -4,7 +4,7 @@
             plotter draws both as traces you can watch while you turn the knob.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, ADC

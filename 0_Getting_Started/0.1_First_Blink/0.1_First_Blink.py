@@ -4,7 +4,7 @@
             confirm the board, the driver and MicroPython itself all work before anything harder.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin

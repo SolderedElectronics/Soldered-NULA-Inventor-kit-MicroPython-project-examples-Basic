@@ -4,7 +4,7 @@
             that the drop is a curve rather than the 0.7 V everybody quotes.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, ADC

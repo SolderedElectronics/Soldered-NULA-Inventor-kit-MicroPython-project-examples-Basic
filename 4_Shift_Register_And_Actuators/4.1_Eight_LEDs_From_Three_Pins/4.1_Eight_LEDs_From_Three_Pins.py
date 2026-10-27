@@ -4,7 +4,7 @@
             brightness control and a pot-driven bar graph, and then breaks the latch on purpose.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, PWM, ADC, SPI

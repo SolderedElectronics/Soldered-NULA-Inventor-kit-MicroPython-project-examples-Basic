@@ -5,7 +5,7 @@
             straight back to sleep unless the sensor has something to say.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, I2C, RTC, deepsleep

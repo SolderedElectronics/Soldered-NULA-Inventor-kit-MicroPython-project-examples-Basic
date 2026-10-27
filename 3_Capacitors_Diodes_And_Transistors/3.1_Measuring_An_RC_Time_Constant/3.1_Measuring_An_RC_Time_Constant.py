@@ -4,7 +4,7 @@
             time constant next to the calculated one. Do it with the 10 uF, then with the 100 nF.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, ADC

@@ -4,7 +4,7 @@
             the gamma-corrected PWM from 1.2. No new components: everything here has been used before.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, PWM, ADC

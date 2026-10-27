@@ -5,7 +5,7 @@
             the LED turns green. Two idle minutes put the board to sleep.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
-@author     Soldered Electronics
+@author     Borna Zelenika @ soldered.com
 """
 
 from machine import Pin, I2C, ADC, PWM, deepsleep, reset_cause
