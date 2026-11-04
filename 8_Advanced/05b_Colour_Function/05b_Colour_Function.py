@@ -50,7 +50,7 @@ pot = ADC(Pin(POT_PIN), atten=ADC.ATTN_11DB)
 # package sets the three channels. The neopixel module handles the GRB byte order and the strict timing.
 rgb = neopixel.NeoPixel(Pin(RGB_PIN), 1)
 
-print("COLOUR mode: hue on IO4.")
+print("Colour: hue on IO4.")
 
 while True:
     raw = pot.read()

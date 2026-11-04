@@ -24,7 +24,7 @@ gamma8 = [int(pow(i / 255.0, 2.2) * 255.0 + 0.5) for i in range(256)]
 # so an 8-bit table value is scaled up by 257 to cover the same range.
 led = PWM(Pin(LED_PIN), freq=PWM_FREQ, duty_u16=0)
 
-print("FADE mode: linear ramp, then gamma-corrected ramp. Watch the LED, not the numbers.")
+print("Fade: linear ramp, then gamma-corrected ramp. Watch the LED, not the numbers.")
 
 while True:
     # Even steps of duty. The LED brightens fast and then looks like it stopped, though the duty is still climbing.
