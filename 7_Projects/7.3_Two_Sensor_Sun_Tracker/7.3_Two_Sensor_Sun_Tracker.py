@@ -20,7 +20,7 @@ Nothing is mounted on the servo. It is a needle: the horn turns to face whicheve
 light around the sensor head to lead it. A real tracker carries its sensors on the moving part, which needs a
 bracket this kit does not have.
 
-The servo takes its power from VCC, as in example 4.2.
+The servo takes its power from VCC, as in T19.
 """
 LDR_LEFT_PIN = 4
 LDR_RIGHT_PIN = 5
@@ -32,7 +32,7 @@ CLOCK_PIN = 12
 LATCH_PIN = 10
 OE_PIN = 13
 
-# Your servo's real limits, measured in example 4.2.
+# Your servo's real limits, measured in T19.
 PULSE_MIN_US = 550
 PULSE_MAX_US = 2500
 
@@ -82,137 +82,152 @@ Pin(OE_PIN, Pin.OUT, value=0)
 # duty_ns() takes the pulse width directly, which is what a servo reads.
 servo = PWM(Pin(SERVO_PIN), freq=SERVO_FREQ)
 
-# Calibration, filled in at startup. Each sensor gets its own.
-left_min, left_max = 4095, 0
-right_min, right_max = 4095, 0
+# Calibration, filled in at startup. Each sensor gets its own darkest and brightest reading. They start at the
+# opposite ends so that the first reading replaces both.
+left_min = 4095
+left_max = 0
+right_min = 4095
+right_max = 0
 
 current_pulse_us = PULSE_CENTRE_US
 update_count = 0
 
+# Start with the needle in the centre.
+servo.duty_ns(current_pulse_us * 1000)
 
-def write_pulse(pulse_us):
-    servo.duty_ns(pulse_us * 1000)
+# Calibration: ten seconds of moving a light around the sensor head. Each sensor records its own darkest and
+# brightest reading, and everything afterwards is a percentage of that sensor's own range.
+print()
+print("CALIBRATING for 10 seconds. Move a light around both sensors, and shade them.")
 
+start = time.ticks_ms()
+while time.ticks_diff(time.ticks_ms(), start) < 10000:
+    left_reading = ldr_left.read()
+    right_reading = ldr_right.read()
 
-def scaled(raw, minimum, maximum):
-    pct = (raw - minimum) * 100 // (maximum - minimum)
-    return max(0, min(100, pct))
+    if left_reading < left_min:
+        left_min = left_reading
+    if left_reading > left_max:
+        left_max = left_reading
+    if right_reading < right_min:
+        right_min = right_reading
+    if right_reading > right_max:
+        right_max = right_reading
 
+    time.sleep_ms(5)
 
-def pulse_for(error):
-    """An error of -100 to 100 turned into a pulse width, one half of the sweep at a time so the centre trim moves
-    only the centre."""
-    if error >= 0:
-        return PULSE_CENTRE_US + (error * (PULSE_MAX_US - PULSE_CENTRE_US)) // 100
-    return PULSE_CENTRE_US + (error * (PULSE_CENTRE_US - PULSE_MIN_US)) // 100
+# If a sensor barely changed, give it a range of at least 10 so the percentages below never divide by zero.
+if left_max - left_min < 10:
+    left_max = left_min + 10
+if right_max - right_min < 10:
+    right_max = right_min + 10
 
-
-def error_for(pulse_us):
-    """The reverse, used by the dead band to ask where the needle is currently pointing."""
-    if pulse_us >= PULSE_CENTRE_US:
-        return (pulse_us - PULSE_CENTRE_US) * 100 // (PULSE_MAX_US - PULSE_CENTRE_US)
-    return -((PULSE_CENTRE_US - pulse_us) * 100 // (PULSE_CENTRE_US - PULSE_MIN_US))
-
-
-def show_error(error):
-    """Lit from the middle outwards, so the bar shows both the size of the error and which way it points. It moves
-    while the needle is still gliding, which is the quickest way to tell a too-wide dead band from a dead sensor."""
-    pattern = 0
-    magnitude = max(0, min(4, abs(error) // 12))
-
-    for i in range(magnitude):
-        if error > 0:
-            pattern |= 1 << (3 - i)
-        else:
-            pattern |= 1 << (4 + i)
-
-    if magnitude == 0:
-        pattern = 0b00011000
-
-    for bit in range(7, -1, -1):
-        data.value((pattern >> bit) & 1)
-        clock.value(1)
-        clock.value(0)
-
-    latch.value(1)
-    latch.value(0)
-
-
-def calibrate():
-    """Ten seconds of moving a light around the sensor head. Each sensor records its own darkest and brightest
-    reading, and everything afterwards is a percentage of that sensor's own range."""
-    global left_min, left_max, right_min, right_max
-
-    print()
-    print("CALIBRATING for 10 seconds. Move a light around both sensors, and shade them.")
-
-    start = time.ticks_ms()
-    while time.ticks_diff(time.ticks_ms(), start) < 10000:
-        left = ldr_left.read()
-        right = ldr_right.read()
-
-        if left < left_min:
-            left_min = left
-        if left > left_max:
-            left_max = left
-        if right < right_min:
-            right_min = right
-        if right > right_max:
-            right_max = right
-
-        time.sleep_ms(5)
-
-    if left_max - left_min < 10:
-        left_max = left_min + 10
-    if right_max - right_min < 10:
-        right_max = right_min + 10
-
-    print("left  {} to {}".format(left_min, left_max))
-    print("right {} to {}".format(right_min, right_max))
-    print()
-    print("left right error pulse_us")
-
-
-write_pulse(current_pulse_us)
-calibrate()
+print("left  {} to {}".format(left_min, left_max))
+print("right {} to {}".format(right_min, right_max))
+print()
+print("left right error pulse_us")
 
 last_update_ms = 0
 
 while True:
-    if time.ticks_diff(time.ticks_ms(), last_update_ms) < UPDATE_INTERVAL_MS:
-        continue
-    last_update_ms = time.ticks_ms()
+    # One update every 30 ms. The rest of the time the loop just comes round again.
+    if time.ticks_diff(time.ticks_ms(), last_update_ms) >= UPDATE_INTERVAL_MS:
+        last_update_ms = time.ticks_ms()
 
-    # Calibrate each sensor to its own range before subtracting, not after. Two photoresistors from the same bag are
-    # not matched, and subtracting raw readings turns that mismatch into a permanent error the needle cannot tell
-    # from a real one: it sits off-centre and looks exactly like a bug in the code.
-    left = scaled(ldr_left.read(), left_min, left_max)
-    right = scaled(ldr_right.read(), right_min, right_max)
+        # Calibrate each sensor to its own range before subtracting, not after. Two photoresistors from the same bag
+        # are not matched, and subtracting raw readings turns that mismatch into a permanent error the needle cannot
+        # tell from a real one: it sits off-centre and looks exactly like a bug in the code. Each reading becomes a
+        # percentage of that sensor's own range, from 0 to 100.
+        left = (ldr_left.read() - left_min) * 100 // (left_max - left_min)
+        if left < 0:
+            left = 0
+        if left > 100:
+            left = 100
 
-    # Gained here, once, so the needle, the LED bar and the printed error all mean the same thing.
-    error = max(-100, min(100, (left - right) * ERROR_GAIN))
+        right = (ldr_right.read() - right_min) * 100 // (right_max - right_min)
+        if right < 0:
+            right = 0
+        if right > 100:
+            right = 100
 
-    show_error(error)
+        # Gained here, once, so the needle, the LED bar and the printed error all mean the same thing.
+        error = (left - right) * ERROR_GAIN
+        if error < -100:
+            error = -100
+        if error > 100:
+            error = 100
 
-    # Hard over at full error, on the trimmed centre when the sensors agree.
-    target_us = pulse_for(error)
+        # The LED bar, lit from the middle outwards, so it shows both the size of the error and which way it points.
+        # It moves while the needle is still gliding, which is the quickest way to tell a too-wide dead band from a
+        # dead sensor. Every 12 points of error lights one more LED, up to four on each side. Each pattern is the
+        # eight LEDs written as eight 1s and 0s, left to right.
+        magnitude = abs(error) // 12
+        if magnitude > 4:
+            magnitude = 4
 
-    # Where the needle points now, in the same units, so the two can be compared directly.
-    shown_error = error_for(current_pulse_us)
+        pattern = "00011000"
 
-    if abs(error - shown_error) > DEAD_BAND:
-        # Move towards the target rather than jumping, so a sudden change in the light becomes a glide.
-        gap = target_us - current_pulse_us
-        current_pulse_us += max(-STEP_US, min(STEP_US, gap))
+        if error > 0 and magnitude == 1:
+            pattern = "00001000"
+        elif error > 0 and magnitude == 2:
+            pattern = "00001100"
+        elif error > 0 and magnitude == 3:
+            pattern = "00001110"
+        elif error > 0 and magnitude == 4:
+            pattern = "00001111"
+        elif error < 0 and magnitude == 1:
+            pattern = "00010000"
+        elif error < 0 and magnitude == 2:
+            pattern = "00110000"
+        elif error < 0 and magnitude == 3:
+            pattern = "01110000"
+        elif error < 0 and magnitude == 4:
+            pattern = "11110000"
 
-    current_pulse_us = max(PULSE_MIN_US, min(PULSE_MAX_US, current_pulse_us))
-    write_pulse(current_pulse_us)
+        # Send the eight digits to the shift register one at a time, then pulse the latch to show them.
+        for digit in pattern:
+            data.value(int(digit))
+            clock.value(1)
+            clock.value(0)
 
-    # Printed whether or not the needle moved, so a still needle is visibly a decision rather than a crash.
-    update_count += 1
-    if update_count >= PRINT_EVERY:
-        update_count = 0
-        print(left, right, error, current_pulse_us)
+        latch.value(1)
+        latch.value(0)
+
+        # Hard over at full error, on the trimmed centre when the sensors agree. The two halves of the sweep are
+        # worked out separately, so the centre trim moves only the centre.
+        if error >= 0:
+            target_us = PULSE_CENTRE_US + (error * (PULSE_MAX_US - PULSE_CENTRE_US)) // 100
+        else:
+            target_us = PULSE_CENTRE_US + (error * (PULSE_CENTRE_US - PULSE_MIN_US)) // 100
+
+        # Where the needle points now, on the same -100 to 100 scale, so the two can be compared directly. This is the
+        # same sum run backwards.
+        if current_pulse_us >= PULSE_CENTRE_US:
+            shown_error = (current_pulse_us - PULSE_CENTRE_US) * 100 // (PULSE_MAX_US - PULSE_CENTRE_US)
+        else:
+            shown_error = -((PULSE_CENTRE_US - current_pulse_us) * 100 // (PULSE_CENTRE_US - PULSE_MIN_US))
+
+        if abs(error - shown_error) > DEAD_BAND:
+            # Move towards the target rather than jumping, so a sudden change in the light becomes a glide.
+            gap = target_us - current_pulse_us
+            if gap < -STEP_US:
+                gap = -STEP_US
+            if gap > STEP_US:
+                gap = STEP_US
+            current_pulse_us = current_pulse_us + gap
+
+        if current_pulse_us < PULSE_MIN_US:
+            current_pulse_us = PULSE_MIN_US
+        if current_pulse_us > PULSE_MAX_US:
+            current_pulse_us = PULSE_MAX_US
+
+        servo.duty_ns(current_pulse_us * 1000)
+
+        # Printed whether or not the needle moved, so a still needle is visibly a decision rather than a crash.
+        update_count = update_count + 1
+        if update_count >= PRINT_EVERY:
+            update_count = 0
+            print(left, right, error, current_pulse_us)
 
 # The LED bar is bright, close to the sensors, and the photoresistors can see it. If the needle drifts towards the
 # breadboard whenever the bar lights up, that is the LEDs, not the control loop.

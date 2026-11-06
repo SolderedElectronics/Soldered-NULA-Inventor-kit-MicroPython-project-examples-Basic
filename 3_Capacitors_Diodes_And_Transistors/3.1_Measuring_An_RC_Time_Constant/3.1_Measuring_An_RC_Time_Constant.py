@@ -36,7 +36,8 @@ C_FARADS = 0.00001
 VSUPPLY_MV = 3300.0
 
 # Nothing is printed until the capture is over. A print() in the sampling loop costs milliseconds, and with the
-# 100 nF the whole event lasts about five milliseconds.
+# 100 nF the whole event lasts about five milliseconds. The two lists below hold all 512 readings and the time of
+# each one until then.
 SAMPLES = 512
 
 """
@@ -45,12 +46,10 @@ itself. That is slower than the same loop in C, which matters here: the 100 nF c
 rise than the Arduino version does, and the 10 uF one is unaffected because its event is a hundred times longer.
 
 Charging finishes after about five time constants, so a capture aimed at three of them puts the 63.2 % crossing
-well inside, and the gap below is whatever is left after the loop has spent its own time.
+well inside, and the gap between samples is whatever is left after the loop has spent its own time.
 """
 LOOP_COST_US = 120.0
 SPAN_TAUS = 3.0
-WANTED_INTERVAL_US = SPAN_TAUS * R_OHMS * C_FARADS * 1000000.0 / SAMPLES
-SAMPLE_GAP_US = int(WANTED_INTERVAL_US - LOOP_COST_US) if WANTED_INTERVAL_US > LOOP_COST_US else 0
 
 drive = Pin(DRIVE_PIN, Pin.OUT)
 sense = ADC(Pin(SENSE_PIN), atten=ADC.ATTN_11DB)
@@ -61,12 +60,41 @@ drive.value(0)
 value_mv = [0] * SAMPLES
 time_us = [0] * SAMPLES
 
+# Work out how far apart the samples should be. If the loop is already slower than that, the gap stays at zero.
+sample_gap_us = 0
+wanted_interval_us = SPAN_TAUS * R_OHMS * C_FARADS * 1000000.0 / SAMPLES
+if wanted_interval_us > LOOP_COST_US:
+    sample_gap_us = int(wanted_interval_us - LOOP_COST_US)
+
 print()
-print("R = {:.0f} ohm, C = {:.3f} uF, gap = {} us per sample".format(R_OHMS, C_FARADS * 1000000.0, SAMPLE_GAP_US))
+print("R = {:.0f} ohm, C = {:.3f} uF, gap = {} us per sample".format(R_OHMS, C_FARADS * 1000000.0, sample_gap_us))
 print("Press the button to charge the capacitor and capture the rise.")
 
+while True:
+    # Nothing to do until the button is pressed.
+    if button.value() != 0:
+        continue
 
-def report_capture():
+    # Empty the capacitor first, or the next capture starts halfway up. Five time constants is the usual rule.
+    drive.value(0)
+    time.sleep_ms(int(5000 * R_OHMS * C_FARADS) + 20)
+
+    # Throw one reading away before starting the clock. The first conversion after the ADC has been idle is much
+    # slower than the ones that follow, and it lands where the voltage is moving fastest.
+    sense.read_uv()
+
+    # Anything between these two lines is time the rise happened without you watching.
+    start_us = time.ticks_us()
+    drive.value(1)
+
+    # Take 512 readings as fast as the board allows, and note the time of each one.
+    for i in range(SAMPLES):
+        value_mv[i] = sense.read_uv() // 1000
+        time_us[i] = time.ticks_diff(time.ticks_us(), start_us)
+        if sample_gap_us > 0:
+            time.sleep_us(sample_gap_us)
+
+    # The capture is over, so now it is safe to print.
     # A capacitor fills quickly at first and then slowly, because the closer it gets to the supply the smaller the
     # voltage difference driving current into it. Tau is the time to reach 63.2 %, and it is R times C, nothing else.
     tau_calculated_us = R_OHMS * C_FARADS * 1000000.0
@@ -106,31 +134,6 @@ def report_capture():
     print("us,mV")
     for i in range(SAMPLES):
         print("{},{}".format(time_us[i], value_mv[i]))
-
-
-while True:
-    if button.value() != 0:
-        continue
-
-    # Empty the capacitor first, or the next capture starts halfway up. Five time constants is the usual rule.
-    drive.value(0)
-    time.sleep_ms(int(5000 * R_OHMS * C_FARADS) + 20)
-
-    # Throw one reading away before starting the clock. The first conversion after the ADC has been idle is much
-    # slower than the ones that follow, and it lands where the voltage is moving fastest.
-    sense.read_uv()
-
-    # Anything between these two lines is time the rise happened without you watching.
-    start_us = time.ticks_us()
-    drive.value(1)
-
-    for i in range(SAMPLES):
-        value_mv[i] = sense.read_uv() // 1000
-        time_us[i] = time.ticks_diff(time.ticks_us(), start_us)
-        if SAMPLE_GAP_US > 0:
-            time.sleep_us(SAMPLE_GAP_US)
-
-    report_capture()
 
     # Wait for the button to be released before arming again.
     while button.value() == 0:

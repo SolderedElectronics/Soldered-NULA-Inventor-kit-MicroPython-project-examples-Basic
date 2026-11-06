@@ -1,7 +1,7 @@
 """
 @file       4.1a_Eight_LEDs_From_Three_Pins.py
 @brief      Drives eight LEDs from a 74HC595, times two different ways of getting a byte into it, and then
-            breaks the latch on purpose.
+            walks a single lit bit across the row.
             For details, connection diagram and more, check out the example documentation at: <link placeholder>
 
 @author     Borna Zelenika @ soldered.com
@@ -25,22 +25,12 @@ CLOCK_PIN = 12
 LATCH_PIN = 10
 OE_PIN = 13
 
-"""
-  MODE_SPEED   times both ways of sending a byte, then walks a single bit across the LEDs
-  MODE_BROKEN  latching while shifting, so you can see what the latch is for
-"""
-MODE_SPEED = 0
-MODE_BROKEN = 1
-
-MODE = MODE_SPEED
-
+# How many times each of the two ways sends the byte while it is being timed.
 TIMING_UPDATES = 2000
 
 latch = Pin(LATCH_PIN, Pin.OUT, value=0)
 data = Pin(DATA_PIN, Pin.OUT)
 clock = Pin(CLOCK_PIN, Pin.OUT)
-
-spi = None
 
 # Output enable is active low, so holding it LOW is what makes the LEDs visible.
 Pin(OE_PIN, Pin.OUT, value=0)
@@ -48,84 +38,121 @@ Pin(OE_PIN, Pin.OUT, value=0)
 print()
 print("74HC595 on IO11 (data), IO12 (clock), IO10 (latch), IO13 (output enable)")
 
+# Same circuit, same result, two ways of sending the byte, and the gap between them is large. How you talk to a
+# part is a design decision with a number attached, and in MicroPython the gap is wider than it is in C because
+# every manual pin write goes through the interpreter. Both ways send the same byte, 0b10101010, and each one is
+# repeated TIMING_UPDATES times while the clock runs.
+print()
 
-def write_manual(value):
-    """
-    The manual version, one pin write at a time. A shift register is a row of eight memory cells: put a bit on the
-    data pin, pulse the clock, and every cell hands its contents to the next while the first takes the new bit.
+# Way 1, by hand. A shift register is a row of eight memory cells: put a bit on the data pin, pulse the clock, and
+# every cell hands its contents to the next while the first takes the new bit. Eight bits means eight of those
+# steps, written out here from the first bit to the last: 1, 0, 1, 0 and so on.
+#
+# Nothing appears on the outputs while this happens. They are fed from a second set of latches that only copy the
+# row when the latch pin is pulsed, which is the last two lines.
+start = time.ticks_us()
+for i in range(TIMING_UPDATES):
+    data.value(1)
+    clock.value(1)
+    clock.value(0)
 
-    Nothing appears on the outputs while this happens. They are fed from a second set of latches that only copy the
-    row when the latch pin is pulsed.
-    """
-    for bit in range(7, -1, -1):
-        data.value((value >> bit) & 1)
-        clock.value(1)
-        clock.value(0)
+    data.value(0)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(1)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(0)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(1)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(0)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(1)
+    clock.value(1)
+    clock.value(0)
+
+    data.value(0)
+    clock.value(1)
+    clock.value(0)
 
     latch.value(1)
     latch.value(0)
+elapsed = time.ticks_diff(time.ticks_us(), start)
+updates_per_second = int(TIMING_UPDATES * 1000000.0 / elapsed)
 
+print("manual pin writes: {} updates per second".format(updates_per_second))
 
-def write_spi(value):
-    """The same signalling, except the chip's hardware generates the clock. The processor hands over one byte and is
-    free until it is done. MicroPython has no shiftOut(), so these two are the whole choice."""
-    spi.write(bytes([value]))
+# Way 2, with hardware SPI. The chip's hardware generates the clock, so the processor hands over one byte and is
+# free until it is done. MicroPython has no shiftOut(), so these two are the whole choice.
+#
+# This has to come second. Handing the pins to the peripheral means a plain Pin write to either does nothing
+# afterwards, and there is no way back inside one run.
+spi = SPI(1, baudrate=8000000, polarity=0, phase=0, sck=Pin(CLOCK_PIN), mosi=Pin(DATA_PIN))
+
+start = time.ticks_us()
+for i in range(TIMING_UPDATES):
+    spi.write(bytes([0b10101010]))
 
     latch.value(1)
     latch.value(0)
+elapsed = time.ticks_diff(time.ticks_us(), start)
+updates_per_second = int(TIMING_UPDATES * 1000000.0 / elapsed)
 
+print("hardware SPI:      {} updates per second".format(updates_per_second))
+print()
 
-def measure(writer):
-    start = time.ticks_us()
-    for i in range(TIMING_UPDATES):
-        writer(i & 0xFF)
-    elapsed = time.ticks_diff(time.ticks_us(), start)
+# Clock one lit bit along the row slowly enough to follow with your eye. The timing run handed the data and clock
+# pins to the SPI peripheral, so the walk sends its bytes with SPI from here on. The LEDs cannot tell the
+# difference.
+#
+# Each byte has a single bit set: 1 is 0b00000001, 2 is 0b00000010, 4 is 0b00000100 and so on up to 128. The last
+# bit sent lands on QA, so QA is the least significant bit and QH the most significant.
+while True:
+    spi.write(bytes([1]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
-    return int(TIMING_UPDATES * 1000000.0 / elapsed)
+    spi.write(bytes([2]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
+    spi.write(bytes([4]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
-def walk_one_bit(writer):
-    """Clock one lit bit along the row slowly enough to follow with your eye. The last bit shifted lands on QA, so
-    QA is the least significant bit and QH the most significant."""
-    for i in range(8):
-        writer(1 << i)
-        time.sleep_ms(150)
+    spi.write(bytes([8]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
+    spi.write(bytes([16]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
-if MODE == MODE_SPEED:
-    # Same circuit, same result, two ways of getting there, and the gap between them is large. How you talk to a
-    # part is a design decision with a number attached, and in MicroPython the gap is wider than it is in C because
-    # every manual pin write goes through the interpreter.
-    print()
-    print("manual pin writes: {} updates per second".format(measure(write_manual)))
+    spi.write(bytes([32]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
-    # SPI must come second. Handing the pins to the peripheral means a plain Pin write to either does nothing
-    # afterwards, and there is no way back inside one run.
-    spi = SPI(1, baudrate=8000000, polarity=0, phase=0, sck=Pin(CLOCK_PIN), mosi=Pin(DATA_PIN))
+    spi.write(bytes([64]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)
 
-    print("hardware SPI:      {} updates per second".format(measure(write_spi)))
-    print()
-
-    while True:
-        # The timing run handed the data and clock pins to the SPI peripheral, so the walk has to use the SPI writer
-        # from here on. The LEDs cannot tell the difference.
-        walk_one_bit(write_spi)
-
-else:
-    # The latch pulsed after every single bit instead of once at the end, so the outputs show the register mid-shift
-    # eight times per byte. The LEDs blur and the pattern you asked for is never actually displayed.
-    while True:
-        value = 0b11110000
-
-        for bit in range(7, -1, -1):
-            data.value((value >> bit) & 1)
-            clock.value(1)
-            clock.value(0)
-
-            # The mistake, on purpose.
-            latch.value(1)
-            latch.value(0)
-
-            time.sleep_ms(120)
-
-        time.sleep_ms(400)
+    spi.write(bytes([128]))
+    latch.value(1)
+    latch.value(0)
+    time.sleep_ms(150)

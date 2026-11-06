@@ -31,16 +31,6 @@ CURRENT_FLOOR_MA = 0.15
 anode = ADC(Pin(ANODE_PIN), atten=ADC.ATTN_11DB)
 cathode = ADC(Pin(CATHODE_PIN), atten=ADC.ATTN_11DB)
 
-
-def averaged(adc):
-    """A single reading carries a few counts of noise, which at the bottom of the sweep is a large slice of the
-    number, so every reading here is the mean of 64."""
-    total = 0
-    for _ in range(64):
-        total += adc.read_uv() // 1000
-    return total / 64.0
-
-
 print()
 print("Turn the pot slowly from one end to the other.")
 print("Lines starting with # are readings the ADC could not take, not data.")
@@ -53,12 +43,30 @@ a slope at a current somebody else picked. Both ends of the sweep are limited by
 which is why readings are thrown away there instead of printed.
 """
 while True:
-    # The two pins are not read at the same instant and the pot is moving, so an anode reading from either side of
-    # the cathode reading, averaged, cancels most of the skew. Without it a fast turn prints a forward voltage that
-    # no diode has.
-    v_anode_mv = averaged(anode)
-    v_cathode_mv = averaged(cathode)
-    v_anode_mv = (v_anode_mv + averaged(anode)) / 2.0
+    # A single reading carries a few counts of noise, which at the bottom of the sweep is a large slice of the
+    # number, so every voltage here is the mean of 64 readings. Each block below adds up 64 readings and divides.
+
+    # First anode reading.
+    anode_total = 0
+    for _ in range(64):
+        anode_total += anode.read_uv() // 1000
+    v_anode_first_mv = anode_total / 64.0
+
+    # Cathode reading.
+    cathode_total = 0
+    for _ in range(64):
+        cathode_total += cathode.read_uv() // 1000
+    v_cathode_mv = cathode_total / 64.0
+
+    # Second anode reading. The two pins are not read at the same instant and the pot is moving, so an anode reading
+    # from either side of the cathode reading, averaged, cancels most of the skew. Without it a fast turn prints a
+    # forward voltage that no diode has.
+    anode_total_2 = 0
+    for _ in range(64):
+        anode_total_2 += anode.read_uv() // 1000
+    v_anode_second_mv = anode_total_2 / 64.0
+
+    v_anode_mv = (v_anode_first_mv + v_anode_second_mv) / 2.0
 
     v_forward_mv = v_anode_mv - v_cathode_mv
     current_ma = v_cathode_mv / R_SENSE_OHMS

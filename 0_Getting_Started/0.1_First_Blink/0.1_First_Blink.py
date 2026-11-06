@@ -10,7 +10,7 @@
 from machine import Pin
 import time
 
-# The LED needs a 330 Ohm resistor in series with it. Example 1.1 works out where that number comes from.
+# The LED needs a 330 Ohm resistor in series with it. This task works out where that number comes from.
 LED_PIN = 38
 
 # On and off time in milliseconds. 500 gives one full blink per second.

@@ -42,6 +42,12 @@ R_LOAD_OHMS = 330.0
 
 VSUPPLY_MV = 3300.0
 
+# Used by the design step at the end. A datasheet gain is a minimum, so assume a pessimistic one, and overdrive the
+# base by five so the transistor stays well past the edge of saturation. 700 mV is what the base sits at.
+PESSIMISTIC_GAIN = 50.0
+OVERDRIVE = 5.0
+V_BE_MV = 700.0
+
 drive = Pin(DRIVE_PIN, Pin.OUT)
 drive.value(1)
 
@@ -52,50 +58,39 @@ sense_drive = ADC(Pin(SENSE_DRIVE_PIN), atten=ADC.ATTN_11DB)
 
 time.sleep_ms(50)
 
-
-def averaged(adc):
-    total = 0
-    for _ in range(64):
-        total += adc.read_uv() // 1000
-    return total / 64.0
-
-
-def design_check(load_ma, actual_base_ma):
-    """
-    The design step. Start from the load current you need, divide by a pessimistic gain because a datasheet figure
-    is a minimum, then multiply by five so the transistor stays well past the edge of saturation. Overdriving the
-    base costs almost nothing, so err generous.
-
-    The second print converts what the pot is doing right now back into the resistor that would do the same job
-    from 3.3 V. Sweep to the edge and that is the largest base resistor this load could have got away with.
-    """
-    PESSIMISTIC_GAIN = 50.0
-    OVERDRIVE = 5.0
-    V_BE_MV = 700.0
-
-    needed_base_ma = (load_ma / PESSIMISTIC_GAIN) * OVERDRIVE
-    r_recommended = (VSUPPLY_MV - V_BE_MV) / needed_base_ma
-
-    print("safe base resistor for this load: about {:.1f} kOhm".format(r_recommended / 1000.0))
-
-    if actual_base_ma > 0.0001:
-        r_equivalent = (VSUPPLY_MV - V_BE_MV) / actual_base_ma
-        print("this base current equals a {:.1f} kOhm resistor driven from 3V3".format(r_equivalent / 1000.0))
-
-
 while True:
-    v_drive = averaged(sense_drive)
-    v_a = averaged(sense_a)
-    v_base = averaged(sense_base)
-    v_c = averaged(sense_c)
+    # Every voltage below is the mean of 64 readings, because a single one carries a few counts of noise. Each block
+    # adds up 64 readings and divides by 64.
+    drive_total = 0
+    for _ in range(64):
+        drive_total += sense_drive.read_uv() // 1000
+    v_drive = drive_total / 64.0
+
+    a_total = 0
+    for _ in range(64):
+        a_total += sense_a.read_uv() // 1000
+    v_a = a_total / 64.0
+
+    base_total = 0
+    for _ in range(64):
+        base_total += sense_base.read_uv() // 1000
+    v_base = base_total / 64.0
+
+    c_total = 0
+    for _ in range(64):
+        c_total += sense_c.read_uv() // 1000
+    v_c = c_total / 64.0
 
     # Everything in that branch is in series, so this is the current through the LED and the transistor too.
     load_ma = (VSUPPLY_MV - v_a) / R_LOAD_OHMS
 
     # Both ends are measured rather than assumed: the pot is a 10 kOhm divider, so its wiper sags as soon as the
     # base draws anything. Notice how little the base voltage moves across the sweep, because it is a diode holding
-    # near 0.7 V, which is why design_check() subtracts it instead of assuming the full supply reaches the resistor.
-    base_ma = (v_drive - v_base) / R_BASE_OHMS if v_drive > v_base else 0.0
+    # near 0.7 V, which is why the design step at the end subtracts it instead of assuming the full supply reaches
+    # the resistor.
+    base_ma = 0.0
+    if v_drive > v_base:
+        base_ma = (v_drive - v_base) / R_BASE_OHMS
 
     """
     This ratio is not the transistor's gain, and reading it as one is the trap the example is built around. While it
@@ -107,7 +102,9 @@ while True:
     saturated against about 119 at the edge, same transistor, same wiring. Take the edge figure as give or take a
     fifth: it comes out of a 295 mV difference between two ADC pins divided by a 10 kOhm resistor.
     """
-    ratio = (load_ma / base_ma) if base_ma > 0.0001 else 0
+    ratio = 0
+    if base_ma > 0.0001:
+        ratio = load_ma / base_ma
 
     print()
     print("wiper voltage:     {:.0f} mV".format(v_drive))
@@ -117,9 +114,11 @@ while True:
     print("base current:      {:.1f} uA".format(base_ma * 1000.0))
     print("current ratio:     {:.0f}".format(ratio))
 
-    # This ADC pins at 4095 near 3140 mV, as 3.2 found. Here that happens with the transistor off, when the bottom of
+    # This ADC pins at 4095 near 3140 mV, as T15 found. Here that happens with the transistor off, when the bottom of
     # the load resistor sits at the full supply.
-    transistor_off = v_a > 3100
+    transistor_off = False
+    if v_a > 3100:
+        transistor_off = True
 
     if transistor_off:
         print("state: off. Load current is at the ADC ceiling and the collector is a floating node, so both")
@@ -132,8 +131,19 @@ while True:
         # warmth is the power the LED did not get.
         print("state: NOT saturated. Touch the transistor, it is dissipating the difference.")
 
-    # With nothing conducting the calculation would run on the ceiling reading and print nonsense.
+    # The design step. With nothing conducting it would run on the ceiling reading and print nonsense, so skip it
+    # then. Start from the load current you need, divide by the pessimistic gain, and multiply by the overdrive.
+    # Overdriving the base costs almost nothing, so err generous.
     if not transistor_off:
-        design_check(load_ma, base_ma)
+        needed_base_ma = (load_ma / PESSIMISTIC_GAIN) * OVERDRIVE
+        r_recommended = (VSUPPLY_MV - V_BE_MV) / needed_base_ma
+
+        print("safe base resistor for this load: about {:.1f} kOhm".format(r_recommended / 1000.0))
+
+        # Convert what the pot is doing right now back into the resistor that would do the same job from 3.3 V.
+        # Sweep to the edge and that is the largest base resistor this load could have got away with.
+        if base_ma > 0.0001:
+            r_equivalent = (VSUPPLY_MV - V_BE_MV) / base_ma
+            print("this base current equals a {:.1f} kOhm resistor driven from 3V3".format(r_equivalent / 1000.0))
 
     time.sleep_ms(500)

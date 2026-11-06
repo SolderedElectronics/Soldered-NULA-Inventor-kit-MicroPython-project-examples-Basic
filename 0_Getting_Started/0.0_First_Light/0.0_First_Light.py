@@ -26,22 +26,21 @@ rgb = neopixel.NeoPixel(Pin(RGB_PIN), 1)
 print("NULA DeepSleep ESP32-S3 running MicroPython. Cycling the LED on the board.")
 
 
-def show(r, g, b):
-    """Set the board's own LED. Three values, 0 to 255, for red, green and blue."""
-    rgb[0] = (r, g, b)
-    rgb.write()
-
-
+# rgb[0] = (red, green, blue) prepares a colour, each value 0 to 255, and rgb.write() sends it to the LED.
 while True:
-    show(LEVEL, 0, 0)  # red
+    rgb[0] = (LEVEL, 0, 0)  # red
+    rgb.write()
     time.sleep_ms(HOLD_MS)
 
-    show(0, LEVEL, 0)  # green
+    rgb[0] = (0, LEVEL, 0)  # green
+    rgb.write()
     time.sleep_ms(HOLD_MS)
 
-    show(0, 0, LEVEL)  # blue
+    rgb[0] = (0, 0, LEVEL)  # blue
+    rgb.write()
     time.sleep_ms(HOLD_MS)
 
     # All three channels off, so there is a clear gap before the next red.
-    show(0, 0, 0)
+    rgb[0] = (0, 0, 0)
+    rgb.write()
     time.sleep_ms(HOLD_MS)

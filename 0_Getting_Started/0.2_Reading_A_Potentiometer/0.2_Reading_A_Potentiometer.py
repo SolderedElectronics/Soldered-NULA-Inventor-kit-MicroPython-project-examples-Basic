@@ -34,5 +34,4 @@ while True:
     print(raw, mv)
 
     # The plotter autoscales, so leave the pot alone and what fills the window is noise, magnified.
-    # Example 2.2 is about that noise and what to do with it.
     time.sleep_ms(DELAY_MS)
