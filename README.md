@@ -1,30 +1,17 @@
 <img src="assets/kit-contents.webp" alt="Soldered Inventor Kit" width="100%">
 
-# Inventor kit: MicroPython examples
+# Inventor kit, Basic: MicroPython examples
 
-MicroPython example scripts for the Soldered Inventor kit, built around the
+MicroPython scripts for the Basic manual of the Soldered Inventor kit, built around the
 [NULA DeepSleep ESP32-S3](https://soldered.com/product/nula-deepsleep-esp32-s3-board/).
 
-In these examples the board measures its own circuits. Example 1.1 reads the voltage across the resistor in series
-with an LED, then works out the LED's forward voltage and the current through it. Example 3.1 captures a capacitor
-charging and prints the time constant it measured beside the one it calculated. Example 4.2 finds the two pulse
-widths your servo actually stops at, which will not be the ones written in the file.
-
-Every number the scripts print comes from your parts, not from a datasheet.
-
-These are the same 21 examples as the
-[Arduino repository](https://github.com/SolderedElectronics/Soldered-NULA-Inventor-kit-Arduino-project-examples),
-with matching numbering and matching pins.
+Every program in the manual is in this repository as the same text, so you never have to retype one.
 
 ## What is on the board
 
 An ESP32-S3 with a CH340 USB-serial chip, an onboard WS2812B RGB LED, a PCF85063A real-time clock and a Qwiic
 connector. Deep-sleep current is in the single microamps.
 
-There are 21 examples across eight sections. Sections 0 to 4 stay on the breadboard and use the ADC to measure
-resistors, capacitors, diodes and transistors. Sections 5 and 6 add the Qwiic modules and deep sleep, and 6.2 hands
-the threshold to the sensor so the board only wakes to ask whether anything happened. Section 7 combines the lot
-into four projects, none of which blocks.
 
 ## Getting started
 
@@ -64,141 +51,109 @@ nothing beyond the standard library.
 Example 7.2 also needs `urequests`, which is not bundled with every build. Install it from the console with
 `import mip; mip.install("urequests")`.
 
-### 4. Run an example
+### 4. Run a program
 
-Each example lives in its own folder. Open the `.py` file in Thonny and press Run, or copy it to the board as
-`main.py` if you want it to start on power-up.
+Each program lives in its own folder, named like the file inside it. Open it in Thonny and press Run and follow the chapter that uses it.
 
-Most scripts have a `MODE` constant near the top. Each mode is one step of the same lesson, usually with a rewiring
-in between, so work through them in order instead of running once.
+## The programs
 
-## The examples
+Every program here is the same text as on its page in the manual, so you can copy it from either place. They are in the order the chapters teach them.
 
-### 0. Getting started
 
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [0.1 First blink](0_Getting_Started/0.1_First_Blink) | That the board, the driver and MicroPython all work, before anything harder | LED, 330 Ω resistor |
-| [0.2 Reading a potentiometer](0_Getting_Started/0.2_Reading_A_Potentiometer) | Analog reads in counts and in millivolts, and two traces at once on the plotter | Potentiometer |
+### 1. Run your first program
 
-### 1. LEDs and PWM
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [1.1 LED current and resistor sizing](1_LEDs_And_PWM/1.1_LED_Current_And_Resistor_Sizing) | Forward voltage and current measured from your own LED, and where the number 330 comes from | LED, 330 Ω resistor, 10 kΩ resistor |
-| [1.2 Gamma fading and RGB colour mixing](1_LEDs_And_PWM/1.2_Gamma_Fading_And_RGB_Colour_Mixing) | Hardware PWM, why duty cycle is not brightness, and the difference between driving an LED and messaging one | LED, 330 Ω resistor, potentiometer, onboard WS2812B |
-
-### 2. Buttons and analog inputs
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [2.1 Pull-up resistors and button debouncing](2_Buttons_And_Analog_Inputs/2.1_Pull_Up_Resistors_And_Button_Debouncing) | Floating pins, pull-up against pull-down, the internal pull-up, and your button's real bounce duration | 2× pushbuttons, 3× 10 kΩ resistors, 100 nF capacitor, LED, 330 Ω resistor |
-| [2.2 ADC noise, averaging and calibration](2_Buttons_And_Analog_Inputs/2.2_ADC_Noise_Averaging_And_Calibration) | That a reading is an estimate with a spread, what averaging costs, and the limit averaging cannot pass | Potentiometer |
-| [2.3 Photoresistor divider with hysteresis](2_Buttons_And_Analog_Inputs/2.3_Photoresistor_Divider_With_Hysteresis) | Picking a component value from a measurement, and why one threshold is unstable | Photoresistor, 3× 10 kΩ resistors, LED, 330 Ω resistor |
-
-### 3. Capacitors, diodes and transistors
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [3.1 Measuring an RC time constant](3_Capacitors_Diodes_And_Transistors/3.1_Measuring_An_RC_Time_Constant) | That the formula is arithmetic you can verify, and how to tell an untrustworthy measurement from a disappointing one | 2× 10 kΩ resistors, 100 nF capacitor, 10 µF capacitor, pushbutton |
-| [3.2 Diode forward voltage](3_Capacitors_Diodes_And_Transistors/3.2_Diode_Forward_Voltage) | That 0.7 V is the middle of a range, and how to spot a reading the ADC has clipped | 1N4148 diode, 330 Ω resistor, potentiometer |
-| [3.3 Transistor base resistor and saturation](3_Capacitors_Diodes_And_Transistors/3.3_Transistor_Base_Resistor_And_Saturation) | That a transistor is a current amplifier, what saturation is, and how to size a base resistor | NPN transistor, 10 kΩ resistor, LED, 330 Ω resistor, potentiometer |
-
-### 4. Shift register and actuators
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [4.1 Eight LEDs from three pins](4_Shift_Register_And_Actuators/4.1_Eight_LEDs_From_Three_Pins) | How a shift register moves data, what hardware SPI buys you over pin writes, and what a latch is for | SN74HC595N shift register, 8× LEDs, 8× 330 Ω resistors, 100 nF capacitor, potentiometer |
-| [4.1a Eight LEDs from three pins, no potentiometer](4_Shift_Register_And_Actuators/4.1a_Eight_LEDs_From_Three_Pins) | The same circuit as 4.1 without the knob: the update-rate timing and the broken latch | SN74HC595N shift register, 8× LEDs, 8× 330 Ω resistors, 100 nF capacitor |
-| [4.2 Servo pulses without a library](4_Shift_Register_And_Actuators/4.2_Servo_Pulses_Without_A_Library) | What a servo signal actually is, that parts are not identical, rate limiting, and why a motor gets its own capacitors | SG90 servo, potentiometer, 10 µF capacitor, 100 nF capacitor |
-| [4.3 Driving a buzzer through a transistor](4_Shift_Register_And_Actuators/4.3_Driving_A_Buzzer_Through_A_Transistor) | Why a passive buzzer needs an alternating signal, mechanical resonance, and what a flyback diode is for | Buzzer, NPN transistor, 10 kΩ resistor, 1N4148 diode, potentiometer |
-
-### 5. Qwiic modules
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [5.1 Scanning the bus and reading temperature](5_Qwiic_Modules/5.1_Scanning_The_Bus_And_Reading_Temperature) | What is really on the I2C bus, and how to tell a reading from a number a missing sensor handed back | TMP117 temperature sensor, Qwiic cable |
-| [5.2 Relay switching with hysteresis and lockout](5_Qwiic_Modules/5.2_Relay_Switching_With_Hysteresis_And_Lockout) | That a mechanical output needs rules a logic output does not, and separating what you want from what you may do | Qwiic relay, Qwiic cable, potentiometer, LED, 330 Ω resistor |
-
-### 6. Low power
-
-| Example | What you learn | Hardware |
-| --- | --- | --- |
-| [6.1 Deep sleep, wake sources and RTC memory](6_Low_Power/6.1_Deep_Sleep_Wake_Sources_And_RTC_Memory) | That deep sleep is stopping and starting, not pausing, and that an interval and a schedule are different things | Pushbutton, 10 kΩ resistor, LED, 330 Ω resistor |
-| [6.2 Checking a sensor alert flag](6_Low_Power/6.2_Checking_A_Sensor_Alert_Flag) | That the sensor can hold the threshold and decide when the processor is needed, and what a wake costs when it finds nothing | TMP117 temperature sensor, Qwiic cable, LED, 330 Ω resistor |
-
-### 7. Projects
-
-| Project | What it combines | Hardware |
-| --- | --- | --- |
-| [7.1 Thermostat with relay and alarm](7_Projects/7.1_Thermostat_With_Relay_And_Alarm) | Sensor, relay, pot, LED and buzzer in one non-blocking loop with a run-on timer | TMP117 temperature sensor, Qwiic relay, potentiometer, buzzer, NPN transistor, LED |
-| [7.2 Wi-Fi temperature logger](7_Projects/7.2_WiFi_Temperature_Logger) | Deep sleep, RTC alarms, a buffer that survives sleep, and where the energy in a connected device goes | TMP117 temperature sensor, pushbutton, 10 kΩ resistor |
-| [7.3 Two-sensor sun tracker](7_Projects/7.3_Two_Sensor_Sun_Tracker) | Closed-loop control taught through its failure: dead band, rate limit and per-sensor calibration | 2× photoresistors, servo, SN74HC595N shift register, 8× LEDs |
-| [7.4 Bench controller](7_Projects/7.4_Bench_Controller) | Architecture. Five jobs at three different rates, none of which blocks | Most of the kit |
-
-## Pins
-
-| Purpose | Pin | Notes |
-| --- | --- | --- |
-| Single LED | IO38 | Always through its own 330 Ω resistor |
-| Analog inputs | IO4, IO5, IO6, IO7 | Pots, photoresistors and circuit taps |
-| Wake-capable button | IO21 | The only button that can wake the board from deep sleep |
-| Second button | IO39 | 7.4 is the only example with two buttons: IO21 and IO39 |
-| Shift register | IO11 data, IO12 clock, IO10 latch, IO13 output enable | IO11 and IO12 are also hardware SPI MOSI and SCK |
-| Servo signal | IO47 | Power from VCC, never 3V3 |
-| Buzzer, through the transistor | IO48 | |
-| Qwiic / I2C | IO8 SDA, IO9 SCL | Passed to `I2C(0, scl=Pin(9), sda=Pin(8))` in every example that needs it |
-
-Two more are wired on the board itself and need nothing from you: the WS2812B RGB LED is on **IO2** through a 1 kΩ
-series resistor, and the PCF85063A RTC's interrupt output is on **IO17**, already pulled up to 3V3. Neither is
-brought out to a header.
-
-### Pins to leave alone
-
-| Pin | Why |
+| Program | What it does |
 | --- | --- |
-| IO43, IO44 | UART0, the serial console |
-| IO0 | Boot strap pin, and the onboard USER button |
-| IO2 | The onboard WS2812B RGB LED, not brought out to a header |
+| 0.0_First_Light.py | The smallest thing the board can do: light the RGB LED that is already on it. |
 
-IO19 and IO20 are the ESP32-S3's native USB lines, but this board talks to your computer through the CH340,
-so nothing uses them and they are free for your own circuits.
+### 2. Switch things on and off
 
-### Why every analog pin is IO4 to IO10
+| Program | What it does |
+| --- | --- |
+| 0.1_First_Blink.py | The first example of the kit. |
+| 0.1_Two_LEDs_Taking_Turns.py | Two LEDs on IO38 and IO39 taking turns. |
+| 0.3_Traffic_Lights.py | A lit spot walking along five LEDs on IO38 to IO42. |
+| 0.3_Dark_Running_Light.py | A dark spot walking along five lit LEDs on IO38 to IO42. |
+| 0.3_Traffic_Lights.py | A car traffic light on IO38, IO39 and IO40, the four-phase kind: red, red and yellow together, green, yellow, and round again. |
 
-The ESP32-S3 has two ADCs, and ADC2 shares hardware with the radio. Once Wi-Fi starts, a read on an ADC2 pin stops
-returning anything useful, and on this board IO11 upwards are ADC2. Section 7 turns Wi-Fi on, so every analog input
-in this kit stays on ADC1. IO8 and IO9 are ADC1 as well but belong to the Qwiic bus, which leaves IO4, IO5, IO6,
-IO7 and IO10.
+### 3. Read a button
 
-### Buttons and pull-ups
+| Program | What it does |
+| --- | --- |
+| 2.1_Floating_Button.py | Reads a button on a pin that nothing is holding, so the reading drifts. |
+| 2.1_External_Pull_Up.py | Reads a button on a pin held HIGH by a 10 kOhm pull-up resistor to 3V3. |
+| 2.1_External_Pull_Down.py | Reads a button on a pin held LOW by a 10 kOhm pull-down resistor to GND. |
+| 2.1_Internal_Pull_Up.py | Reads a button using the pull-up resistor that is built into the chip. |
+| 2.1_Button_Bounce.py | Samples a button every 50 us after a press and prints how long it rattles for. |
 
-Buttons use the chip's **internal pull-up resistors**, switched on with `Pin.PULL_UP`, so no resistor is needed on
-the breadboard: one side to the pin, the other straight to GND. The readings come out the other way round from what
-you might expect, which is called active low: the pin reads **1 while released** and **0 while pressed**.
+### 4. Measure with an analog pin
 
-The exception is any button that has to wake the board from deep sleep. The internal pull-ups switch off during
-sleep, so those need a **10 kΩ to 3V3** on the breadboard as well, or the pin floats and wakes the board at random.
+| Program | What it does |
+| --- | --- |
+| 0.2_Reading_A_Potentiometer.py | Reads a potentiometer and prints it two ways at once, as raw ADC counts and as millivolts, so Thonny's plotter draws both as traces you can watch while you turn the knob. |
+| 2.3_Photoresistor_Resistance.py | Measures the photoresistor's own resistance from the voltage at the junction of the divider, so you can pick a fixed resistor to pair it with. |
+| 2.3_Photoresistor_Hysteresis.py | Calibrates the light range, then switches an LED on two thresholds, so light sitting right on the switching point cannot make it flicker. |
+| 2.3_Photoresistor_Single_Threshold.py | Calibrates the light range, then switches an LED on one threshold, so you can watch it flicker when the light sits right on the switching point. |
+| 2.3_Photoresistor_Percent.py | Calibrates the light range over ten seconds, then reports the light as a percentage of that range. |
 
-## What is different from the Arduino version
+### 5. Fade an LED
 
-The circuits and the pins are identical. The code is not, and four differences are worth knowing before you compare
-the two side by side.
+| Program | What it does |
+| --- | --- |
+| 1.2_Gamma_Fading_And_RGB_Colour_Mixing.py | Ramps an LED linearly and then with a gamma curve so you can compare them back to back. |
 
-| | Arduino | MicroPython |
-| --- | --- | --- |
-| A missing Qwiic module | The driver returns `0.0000 °C` and nothing looks wrong | The read raises `OSError`, so the examples catch it |
-| Servo pulse width | Converted into an LEDC duty number, capped at 14 bits | `PWM.duty_ns()` takes the pulse width directly |
-| State that survives deep sleep | `RTC_DATA_ATTR` on each variable | Packed into `machine.RTC().memory()` with `struct` |
-| Getting a byte into the 74HC595 | Three ways: pin writes, `shiftOut()`, hardware SPI | Two: pin writes and hardware SPI. There is no `shiftOut()` |
+### "6. Project: a night light"
 
-Both still check `getDeviceID() == 0x117` before trusting a temperature. Catching the exception only tells you the
-bus answered, not that the right device answered.
+| Program | What it does |
+| --- | --- |
+| 1.3_Night_Light.py | A night light that fades up as the room gets dark, combining the photoresistor divider from T10 with the gamma-corrected PWM from T12. |
 
-## Constants to measure for yourself
+### 7. Capacitors, diodes and transistors
 
-`RESONANT_HZ` in 4.3 and the servo pulse limits in 4.2 are starting values, not answers. Measure your own on the
-pages that teach you how, then carry them into 7.1, 7.3 and 7.4.
+| Program | What it does |
+| --- | --- |
+| 3.1_Measuring_An_RC_Time_Constant.py | Charges a capacitor through a resistor, captures the rise into a buffer, and prints the measured time constant next to the calculated one. |
+| 3.2_Diode_Forward_Voltage.py | Logs a diode's forward voltage against the current through it while you turn a pot, so you can see that the drop is a curve rather than the 0.7 V everybody quotes. |
+| 3.3_Transistor_Base_Resistor_And_Saturation.py | Sweeps the base drive of an NPN transistor with the potentiometer and measures load current, base current and the ratio between them. |
+
+### 8. Buzzers, servos and shift registers
+
+| Program | What it does |
+| --- | --- |
+| 4.3_Driving_A_Buzzer_Through_A_Transistor.py | Drives a passive buzzer through an NPN transistor from the + row, with a flyback diode. |
+| 4.3b_Buzzer_Loudness_From_A_Pot.py | Drives a passive buzzer through an NPN transistor at one fixed frequency, with a pot setting the duty cycle and so the loudness. |
+| 4.3c_Buzzer_Held_Steady.py | Drives the pin of a passive buzzer's transistor steadily high, to show that a steady voltage makes no sound. |
+| 4.3d_Buzzer_Duty_Steps.py | Holds a passive buzzer at its resonant frequency and steps the duty cycle through 5, 10, 25 and 50 %. |
+| 4.2_Servo_Pulses_Without_A_Library.py | No servo library. |
+| 4.1a_Eight_LEDs_From_Three_Pins.py | Drives eight LEDs from a 74HC595, times two different ways of getting a byte into it, and then walks a single lit bit across the row. |
+
+### 9. Qwiic modules
+
+| Program | What it does |
+| --- | --- |
+| 5.1_Scanning_The_Bus_And_Reading_Temperature.py | Scans the I2C bus and prints every address that answers, so you can see what is really connected. |
+| 5.1_Scanning_The_Bus_And_Reading_Temperature.py | Reads temperature from the TMP117 twice a second and checks every reading is a real one. |
+| 5.2_Relay_Switching_With_Hysteresis_And_Lockout.py | Switches a Qwiic relay from a pot. |
+| 5.2_Relay_Switching_With_Hysteresis_And_Lockout.py | Switches a Qwiic relay from a pot, with a hysteresis band but no minimum interval between switches. |
+
+### 10. Deep sleep and waking up
+
+| Program | What it does |
+| --- | --- |
+| 6.1_Deep_Sleep_Wake_Sources_And_RTC_Memory.py | Two counters show what survives deep sleep and what does not. |
+| 6.1_Deep_Sleep_Button_Wake.py | Two counters show what survives deep sleep and what does not. |
+| 6.1_Deep_Sleep_Timer_Or_Button_Wake.py | Two counters show what survives deep sleep and what does not. |
+| 6.2_Checking_A_Sensor_Alert_Flag.py | The TMP117 keeps converting on its own and decides for itself when the temperature has left a band, then latches a flag. |
+
+### 11. Four projects
+
+| Program | What it does |
+| --- | --- |
+| 7.1_Thermostat_With_Relay_And_Alarm.py | A cooling thermostat. |
+| 7.2_WiFi_Temperature_Logger.py | Sends a message every minute, the moment the temperature moves a full degree, or whenever the button is pressed. |
+| 7.3_Two_Sensor_Sun_Tracker.py | Two photoresistors either side of a paper strip turn a servo needle towards the brighter one, with a dead band and a rate limit to keep it from shuffling on its own noise. |
+| 7.4_Bench_Controller.py | Five jobs sharing one loop, none of them waiting for the others. |
+The Advanced manual has its own repository with longer programs and bigger projects: [Soldered-NULA-Inventor-kit-MicroPython-project-examples-Advanced](https://github.com/SolderedElectronics/Soldered-NULA-Inventor-kit-MicroPython-project-examples-Advanced).
 
 ### About Soldered
 
